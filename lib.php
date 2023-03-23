@@ -25,14 +25,90 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/group/lib.php');
-
 class enrol_studentstaff_plugin extends enrol_plugin {
+
+    /**
+     * Override the allow unenroll function.
+     *
+     * @param stdClass $instance
+     * @return bool true
+     */
+    public function allow_unenrol(stdClass $instance) {
+        // Users with unenrol cap may unenrol other users manually manually.
+        return true;
+    }
+
+    /**
+     * Fetches the moodle "scheduled task" object
+     *
+     * @return \core\task\scheduled_task
+     */
+    private function get_scheduled_task() {
+        // Get the task.
+        $task = \core\task\manager::get_scheduled_task('\enrol_studentstaff\task\studentstaff_enroll');
+
+        // Return the task.
+        return $task;
+    }
 
     /**
      * Standard function for scheduled task.
      */
-    public function cron() {
+    public static function run_studentstaff_enroll() {
+        require_once('classes/studentstaff.php');
+
+        // Return the comma separated course role ids.
+        $courseroles = get_config('enrol_studentstaff', 'courserolescheck');
+
+        // Return an array of enrollment methods.
+        $enrollmethods = explode(",", get_config('enrol_studentstaff', 'enrollmethods'));
+
+        // Loop through the enrollment methods and quote them.
+        foreach ($enrollmethods as $enrollmethod) {
+            $enroll[] = '"' . $enrollmethod . '"';
+        }
+
+        // Implode the array into a comma seperated list.
+        $enrolls = implode(",", $enroll);
+
+        // Use the local function to get users from site roles.
+        $siteusers = studentstaff::get_site_users_studentstaff();
+
+        // Set up an empty courses array.
+        $courses = array();
+
+        // Get the ss role.
+        $ssrole = studentstaff::get_studentstaff_role();
+        $count = count($siteusers);
+
+        mtrace("Begin assigning $ssrole->shortname role for $count users.");
+
+        // Loop through the site users.
+        foreach ($siteusers as $siteuser) {
+            mtrace("  Begin assigning $ssrole->shortname role for $siteuser->firstname $siteuser->lastname.");
+
+            // Get a list of the site users courses and data useful for enrolling them.
+            $courses = studentstaff::get_user_studentstaff_courses($siteuser->id, $courseroles, $enrolls);
+
+            // Set this up for logging below.
+            $ccount = count($courses);
+
+            // Log this.
+            if ($ccount == 0) {
+                mtrace("  &mdash; No missing $ssrole->shortname roles for $siteuser->firstname $siteuser->lastname.");
+            } else {
+                mtrace("  &mdash; $ccount missing $ssrole->shortname roles for $siteuser->firstname $siteuser->lastname.");
+            }
+
+            // Loop through their courses.
+            foreach ($courses as $courseobj) {
+
+                // Enroll them.
+                $enrolled = studentstaff::studentstaff_enrollment($courseobj, $ssrole);
+            }
+            mtrace("  Finished assigning $ssrole->shortname role for $siteuser->firstname $siteuser->lastname.");
+        }
+        mtrace("Finished assigning $ssrole->shortname role for $count users.");
     }
 
     /**

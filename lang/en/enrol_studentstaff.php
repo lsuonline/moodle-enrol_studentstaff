@@ -27,14 +27,22 @@
 // Basic stuff.
 $string['pluginname'] = 'Student/Staff';
 $string['pluginname_desc'] = 'This enrollment method will repeatedly check for staff roles enrolled in courses as students via the designated enrollment method and assign a designated role for them.';
-$string['basicsettings'] = 'Basic Settings';
+$string['ss_settings'] = 'Settings';
 $string['studentstaffcrontask'] = 'Student/Staff enrollment';
+$string['studentstaff_enroll'] = 'Student/Staff enrollment';
 
 // Privacy stuff.
 $string['privacy:metadata'] = 'The LSU Student/Staff enrolment plugin does not store any personal data.';
 
 // Settings.
-$string['ss_enrol'] = 'Enrollment Provider';
+$string['ss_enrollmethods'] = 'Enrollment Provider';
+$string['ss_enrollmethods_help'] = 'Search and use these enrollment methods while assigning roles.';
 $string['ss_siterolescheck'] = 'Site roles to check';
+$string['ss_siterolescheck_help'] = '';
 $string['ss_courserolescheck'] = 'Course roles to check';
+$string['ss_courserolescheck_help'] = '';
 $string['ss_courseroleassign'] = 'Course role to assign';
+$string['ss_courseroleassign_help'] = '';
+$string['ss_enrollmentmethods'] = 'Enrollment methods';
+$string['all_role'] = 'All roles';
+$string['ss_settings_help'] = "We will loop through the selected system role assignments (" . strtolower($string['ss_siterolescheck']) . ") to find course assignments (" . strtolower($string['ss_courserolescheck']) . ") and assign them the required " . strtolower($string['ss_courseroleassign']) . ".";

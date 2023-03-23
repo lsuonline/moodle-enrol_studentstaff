@@ -26,9 +26,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// Build the tasks array.
 $tasks = array(
     array(
-        'classname' => 'enrol_studentstaff\task\cron_task',
+        'classname' => 'enrol_studentstaff\task\studentstaff_enroll',
         'blocking' => 0,
         'minute' => '10',
         'hour' => '*',

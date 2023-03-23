@@ -17,19 +17,18 @@
 /**
  * A scheduled task.
  *
+ * The task for running studentstaff enrollment.
+ *
  * @package    enrol_studentstaff
- * @copyright  2023 Robert Russo
- * @copyright  2023 Louisiana State University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright  2023 onwards LSUOnline & Continuing Education
+ * @copyright  2023 onwards Robert Russo
  */
-
 namespace enrol_studentstaff\task;
 
 /**
- * Simple task to run the LSU studentstaff enrolment cron.
- *
+ * Extend the Moodle scheduled task class with ours.
  */
-class cron_task extends \core\task\scheduled_task {
+class studentstaff_enroll extends \core\task\scheduled_task {
 
     /**
      * Get a descriptive name for this task (shown to admins).
@@ -37,17 +36,19 @@ class cron_task extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('studentstaffcrontask', 'enrol_studentstaff');
+        return get_string('studentstaff_enroll', 'enrol_studentstaff');
     }
 
     /**
-     * Do the nasty.
+     * Do the job.
      *
+     * Throw exceptions on errors (the job will be retried).
      */
     public function execute() {
         global $CFG;
+
         require_once($CFG->dirroot . '/enrol/studentstaff/lib.php');
-        $ssenroll = new \enrol_studentstaff_plugin();
-        $ssenroll->cron();
+        $studentstaff = new \enrol_studentstaff_plugin();
+        $studentstaff->run_studentstaff_enroll();
     }
 }

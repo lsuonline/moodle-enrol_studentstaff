@@ -25,6 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// Build the capabilities array.
 $capabilities = array(
     'enrol/studentstaff:config' => array(
         'captype' => 'write',
@@ -32,6 +33,13 @@ $capabilities = array(
         'archetypes' => array(
             'manager' => CAP_ALLOW,
             'editingteacher' => CAP_ALLOW,
+        )
+    ),
+    'enrol/studentstaff:unenrol' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
         )
     ),
 );
